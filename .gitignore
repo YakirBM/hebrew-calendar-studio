@@ -1,0 +1,5 @@
+qa/clipping-diagnostics/
+qa/layout-artifacts/
+qa/test-artifacts/
+__pycache__/
+*.pyc

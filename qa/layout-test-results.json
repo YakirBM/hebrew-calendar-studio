@@ -1,0 +1,160 @@
+{
+  "a4_22_weeks": {
+    "pages": 1,
+    "cells": 154,
+    "overflow": 0,
+    "printEnabled": true,
+    "meta": "16/08/2026–16/01/2027 · A4 · 22 שבועות · עמוד יחיד · גופן 7.75pt",
+    "notice": "",
+    "dimensions": [
+      {
+        "page": 1,
+        "cellCount": 154,
+        "dateCellCount": 154,
+        "verticalLines": 8,
+        "horizontalLines": 24,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 33.66558837890625,
+        "maxHeight": 33.67657470703125
+      }
+    ]
+  },
+  "a4_52_weeks": {
+    "pages": 1,
+    "cells": 364,
+    "overflow": 0,
+    "printEnabled": true,
+    "meta": "04/01/2026–02/01/2027 · A4 · 52 שבועות · עמוד יחיד · גופן 3.75pt",
+    "notice": "כל התוכן נכנס ללא קיטוע, אך גודל הבסיס הוקטן ל־3.75pt ועלול להיות קשה לקריאה. מומלץ לבחור A3 או ריבוי עמודים.",
+    "dimensions": [
+      {
+        "page": 1,
+        "cellCount": 364,
+        "dateCellCount": 364,
+        "verticalLines": 8,
+        "horizontalLines": 54,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 14.2406005859375,
+        "maxHeight": 14.2515869140625
+      }
+    ],
+    "printRect": {
+      "width": 793.6875,
+      "height": 1122.515625
+    }
+  },
+  "a3_52_weeks": {
+    "pages": 1,
+    "cells": 364,
+    "overflow": 0,
+    "printEnabled": true,
+    "meta": "04/01/2026–02/01/2027 · A3 · 52 שבועות · עמוד יחיד · גופן 5.25pt",
+    "notice": "כל התוכן נכנס ללא קיטוע, אך גודל הבסיס הוקטן ל־5.25pt ועלול להיות קשה לקריאה. מומלץ לבחור A3 או ריבוי עמודים.",
+    "dimensions": [
+      {
+        "page": 1,
+        "cellCount": 364,
+        "dateCellCount": 364,
+        "verticalLines": 8,
+        "horizontalLines": 54,
+        "minWidth": 109.22189331054688,
+        "maxWidth": 109.2327880859375,
+        "minHeight": 20.496826171875,
+        "maxHeight": 20.5078125
+      }
+    ],
+    "printRect": {
+      "width": 1122.515625,
+      "height": 1587.390625
+    }
+  },
+  "a4_156_weeks_guardrail": {
+    "pages": 1,
+    "cells": 1092,
+    "overflow": 328,
+    "printEnabled": false,
+    "meta": "05/01/2025–01/01/2028 · A4 · 156 שבועות · עמוד יחיד · גופן 3.5pt",
+    "notice": "הייצוא נחסם: 328 משבצות עדיין אינן מכילות את כל הטקסט (10/01, 11/01, 18/01, 25/01…). עברו ל־A3, הקטינו טקסט או בחרו מפורשות בריבוי עמודים.",
+    "dimensions": [
+      {
+        "page": 1,
+        "cellCount": 1092,
+        "dateCellCount": 1092,
+        "verticalLines": 8,
+        "horizontalLines": 158,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 4.746826171875,
+        "maxHeight": 4.7578125
+      }
+    ]
+  },
+  "explicit_multipage": {
+    "pages": 3,
+    "cells": 364,
+    "overflow": 0,
+    "printEnabled": true,
+    "meta": "04/01/2026–02/01/2027 · A4 · 52 שבועות · 3 עמודים · גופן 8.75pt",
+    "notice": "הטבלה הותאמה לעמודים שנבחרו ללא קיטוע: גודל בסיס 8.75pt, ו־1 תאים הוקטנו נקודתית.",
+    "dimensions": [
+      {
+        "page": 1,
+        "cellCount": 154,
+        "dateCellCount": 154,
+        "verticalLines": 8,
+        "horizontalLines": 24,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 33.66558837890625,
+        "maxHeight": 33.676605224609375
+      },
+      {
+        "page": 2,
+        "cellCount": 154,
+        "dateCellCount": 154,
+        "verticalLines": 8,
+        "horizontalLines": 24,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 33.66552734375,
+        "maxHeight": 33.6766357421875
+      },
+      {
+        "page": 3,
+        "cellCount": 154,
+        "dateCellCount": 56,
+        "verticalLines": 8,
+        "horizontalLines": 24,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 33.66552734375,
+        "maxHeight": 33.6767578125
+      }
+    ]
+  },
+  "unfit_text_blocked": {
+    "pages": 1,
+    "cells": 154,
+    "overflow": 1,
+    "printEnabled": false,
+    "meta": "16/08/2026–16/01/2027 · A4 · 22 שבועות · עמוד יחיד · גופן 8.75pt",
+    "notice": "הייצוא נחסם: משבצת אחת עדיין אינה מכילה את כל הטקסט (16/08). עברו ל־A3, הקטינו טקסט או בחרו מפורשות בריבוי עמודים.",
+    "dimensions": [
+      {
+        "page": 1,
+        "cellCount": 154,
+        "dateCellCount": 154,
+        "verticalLines": 8,
+        "horizontalLines": 24,
+        "minWidth": 76.34371948242188,
+        "maxWidth": 76.354736328125,
+        "minHeight": 33.66558837890625,
+        "maxHeight": 33.676605224609375
+      }
+    ]
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
