@@ -8,10 +8,12 @@ import { saveNotes } from "@/infrastructure/storage/notes.repository";
 import { useCalendarStore } from "@/state/calendar-store";
 import { useSettingsStore } from "@/state/settings-store";
 import { CalendarPreview } from "@/components/calendar/calendar-preview";
+import { MobileWeekCalendar } from "@/components/calendar/mobile-week-calendar";
 import { DayEditorDialog } from "@/components/editor/day-editor-dialog";
 import { SettingsPanel } from "@/components/settings/settings-panel";
 import { TopBar } from "./top-bar";
 import { PreviewToolbar } from "./preview-toolbar";
+import { MobileActionBar, type MobileViewMode } from "./mobile-action-bar";
 
 export const CalendarStudio = () => {
   const { generate, upsertNote, removeNote, hydrated, status } = useCalendarController();
@@ -32,6 +34,8 @@ export const CalendarStudio = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.6);
   const [autoFit, setAutoFit] = useState(true);
+  const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>("week");
+  const [compactViewport, setCompactViewport] = useState(false);
   const generatedOnce = useRef(false);
 
   useEffect(() => {
@@ -45,6 +49,22 @@ export const CalendarStudio = () => {
     document.body.classList.toggle("drawer-open", settingsOpen);
     return () => document.body.classList.remove("drawer-open");
   }, [settingsOpen]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSettingsOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 680px)");
+    const sync = () => setCompactViewport(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   const setManualZoom = (value: number) => {
     setAutoFit(false);
@@ -91,13 +111,20 @@ export const CalendarStudio = () => {
     payload.requestedEnd !== settings.endDate ||
     payload.region !== settings.region
   ));
+  const canPrint = Boolean(payload && layoutReady && !dataStale);
+  const physicalPreviewHidden = compactViewport && mobileViewMode === "week";
+
+  const changeMobileView = (mode: MobileViewMode) => {
+    setMobileViewMode(mode);
+    if (mode === "page") setAutoFit(true);
+  };
 
   if (!hydrated) return <div className="app-loading" role="status"><span className="spinner" /><span>מכין את הסטודיו…</span></div>;
 
   return (
-    <div className="studio-root" dir="rtl">
+    <div className={`studio-root mobile-mode-${mobileViewMode}`} dir="rtl">
       <style>{`@page { size: ${paper.width}mm ${paper.height}mm; margin: 0; }`}</style>
-      <TopBar status={status} onOpenSettings={() => setSettingsOpen(true)} onPrint={print} canPrint={Boolean(payload && layoutReady && !dataStale)} />
+      <TopBar status={status} onOpenSettings={() => setSettingsOpen(true)} onPrint={print} canPrint={canPrint} />
       <div className="studio-layout">
         <SettingsPanel settings={settings} open={settingsOpen} loading={status === "loading"} onClose={() => setSettingsOpen(false)} onUpdate={update} onDensity={chooseDensity} onPreset={choosePreset} onGenerate={() => void generate()} onExportProject={exportProject} onImportProject={(file) => void importProject(file)} onReset={reset} />
         <button className={`drawer-backdrop no-print${settingsOpen ? " is-open" : ""}`} type="button" aria-label="סגירת ההגדרות" onClick={() => setSettingsOpen(false)} />
@@ -108,12 +135,18 @@ export const CalendarStudio = () => {
             {overflowingDates.length > 0 && <strong>נמצאה גלישת טקסט ב־{overflowingDates.length} תאים; הייצוא חסום כדי למנוע קיטוע.</strong>}
           </div>
           {payload ? (
-            <CalendarPreview payload={payload} settings={settings} notes={notes} zoom={zoom} autoFit={autoFit} onFitZoom={acceptFitZoom} onEditDay={setSelectedDate} />
+            <>
+              <MobileWeekCalendar key={`${payload.alignedStart}-${payload.alignedEnd}`} payload={payload} settings={settings} notes={notes} onEditDay={setSelectedDate} />
+              <div className="print-preview-region" aria-hidden={physicalPreviewHidden || undefined} inert={physicalPreviewHidden ? true : undefined}>
+                <CalendarPreview payload={payload} settings={settings} notes={notes} zoom={zoom} autoFit={autoFit} onFitZoom={acceptFitZoom} onEditDay={setSelectedDate} />
+              </div>
+            </>
           ) : (
             <div className="empty-preview"><span>הדף יופיע כאן</span><h2>מפיקים לוח עברי מדויק להדפסה</h2><p>בחרו טווח, גודל נייר והעדפות תוכן. התצוגה תתאים את כל התאים באופן שווה.</p><button className="button button--primary" type="button" onClick={() => void generate()}>הפקת לוח ראשון</button></div>
           )}
         </main>
       </div>
+      <MobileActionBar viewMode={mobileViewMode} canPrint={canPrint} onViewMode={changeMobileView} onOpenSettings={() => setSettingsOpen(true)} onPrint={print} />
       <DayEditorDialog date={selectedDate} notes={selectedDate ? notes[selectedDate] ?? [] : []} defaultColor={settings.noteColor} onClose={() => setSelectedDate(null)} onSave={async (note) => { if (selectedDate) await upsertNote(selectedDate, note); }} onDelete={async (id) => { if (selectedDate) await removeNote(selectedDate, id); }} />
     </div>
   );

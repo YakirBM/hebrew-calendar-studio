@@ -15,7 +15,8 @@ An RTL-first Next.js application for creating accurate Hebrew/Gregorian calendar
 - Clear positive network indication plus exact-range offline cache.
 - Private personal notes stored only in browser IndexedDB.
 - Versioned project import/export as JSON.
-- Responsive settings drawer and full-screen mobile day editor.
+- Touch-first mobile week view with seven readable day cards, week navigation, a safe-area-aware bottom action bar, and one-tap access to the exact physical-page preview.
+- Responsive settings drawer with compact accordions and a full-screen mobile day editor.
 - Strict TypeScript, unit tests, Playwright desktop/mobile tests, and production builds.
 
 ## Local development / פיתוח מקומי
@@ -40,7 +41,7 @@ npm run test:e2e
 npm run build
 ```
 
-`npm run verify` runs lint, type checking, unit tests, and the production build. Playwright additionally validates equal cells, long-text export blocking, A3 landscape, mobile behavior, personal notes, and exact one-page A4 PDF output.
+`npm run verify` runs lint, type checking, unit tests, and the production build. Playwright additionally validates equal cells, long-text export blocking, A3 landscape, 320 px portrait and phone-landscape behavior, mobile touch targets, personal notes, and exact one-page A4 PDF output.
 
 ## Project structure / מבנה הפרויקט
 

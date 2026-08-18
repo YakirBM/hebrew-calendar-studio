@@ -14,7 +14,9 @@ export type IconName =
   | "download"
   | "upload"
   | "reset"
-  | "check";
+  | "check"
+  | "chevronLeft"
+  | "chevronRight";
 
 const paths: Record<IconName, React.ReactNode> = {
   calendar: <><path d="M6 2v3M18 2v3M3 9h18"/><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 14 2 2 5-5"/></>,
@@ -31,6 +33,8 @@ const paths: Record<IconName, React.ReactNode> = {
   upload: <><path d="M12 21V9m-4 4 4-4 4 4"/><path d="M5 3h14"/></>,
   reset: <><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></>,
   check: <path d="m5 12 4 4L19 6"/>,
+  chevronLeft: <path d="m15 18-6-6 6-6"/>,
+  chevronRight: <path d="m9 18 6-6-6-6"/>,
 };
 
 export const Icon = ({ name, ...props }: SVGProps<SVGSVGElement> & { name: IconName }) => (

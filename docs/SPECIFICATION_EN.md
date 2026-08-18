@@ -104,14 +104,20 @@ The single page contains:
 4. **Notice bar** - live validation, loading, offline, readability, and overflow messages.
 5. **Preview canvas** - one or more scaled physical pages.
 6. **Day editor dialog** - computed events and editable personal notes for the selected date.
+7. **Mobile weekly view** - seven readable day cards, week navigation, and direct note editing.
+8. **Mobile action bar** - thumb-zone access to settings, weekly view, physical page, and PDF export.
 
 ### 7.2 Responsive behavior
 
 - Desktop uses a persistent settings column and a scrollable preview workspace.
-- Below 980 px, settings become a modal side drawer.
-- The preview scale is reduced automatically when the physical page would exceed the available width.
+- Below 1024 px, settings become a modal side drawer; at 680 px and below they become a full-screen accordion sheet.
+- At 680 px and below, the touch-first weekly view is the default. It shows exactly seven interactive day cards with 48 px navigation controls.
+- A fixed, safe-area-aware four-action bar provides Settings, Weekly view, Physical page, and PDF export.
+- In phone landscape at 600–680 px, day cards use a two-column layout.
+- The exact physical-page preview remains available as a separate mobile view and is reduced automatically when it exceeds the available width.
 - Preview scrolling uses an LTR scroll container while the calendar remains RTL. This prevents the left edge of a wide page from becoming inaccessible in RTL scrolling implementations.
 - Manual zoom remains possible; if the user intentionally zooms beyond the available width, horizontal scrolling is allowed.
+- The off-screen physical page remains mounted during weekly view for overflow measurement, but is inert and hidden from assistive technology. Print output always uses this physical page, never the mobile cards.
 
 ## 8. Complete settings specification
 

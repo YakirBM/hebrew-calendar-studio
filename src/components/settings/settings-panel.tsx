@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { parseCustomEvents } from "@/domain/calendar/custom-events";
 import type { CalendarSettings, Density, DesignPreset } from "@/domain/print/types";
 import { Icon } from "@/components/ui/icon";
@@ -19,10 +19,32 @@ type Props = {
   onReset: () => void;
 };
 
-const Section = ({ title, eyebrow, children }: { title: string; eyebrow: string; children: React.ReactNode }) => (
+const Section = ({ id, title, eyebrow, children, compact, open, onToggle }: {
+  id: string;
+  title: string;
+  eyebrow: string;
+  children: React.ReactNode;
+  compact: boolean;
+  open: boolean;
+  onToggle: (id: string) => void;
+}) => (
   <section className="settings-section">
-    <header><span>{eyebrow}</span><h2>{title}</h2></header>
-    {children}
+    {compact ? (
+      <button
+        className="settings-section__trigger"
+        type="button"
+        aria-expanded={open}
+        aria-controls={`settings-section-${id}`}
+        onClick={() => onToggle(id)}
+      >
+        <span>{eyebrow}</span>
+        <h2>{title}</h2>
+        <span className="settings-section__toggle" aria-hidden="true"><Icon name={open ? "minus" : "plus"} /></span>
+      </button>
+    ) : (
+      <header className="settings-section__trigger"><span>{eyebrow}</span><h2>{title}</h2></header>
+    )}
+    <div className="settings-section__body" id={`settings-section-${id}`} hidden={compact && !open}>{children}</div>
   </section>
 );
 
@@ -63,16 +85,42 @@ const ColorField = ({ label, value, onChange }: { label: string; value: string; 
 export const SettingsPanel = ({ settings, open, loading, onClose, onUpdate, onDensity, onPreset, onGenerate, onExportProject, onImportProject, onReset }: Props) => {
   const importRef = useRef<HTMLInputElement>(null);
   const customEventErrors = parseCustomEvents(settings.customEvents).errors;
+  const [compact, setCompact] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [activeSection, setActiveSection] = useState("layout");
+
+  useEffect(() => {
+    const compactQuery = window.matchMedia("(max-width: 680px)");
+    const drawerQuery = window.matchMedia("(max-width: 1024px)");
+    const sync = () => {
+      setCompact(compactQuery.matches);
+      setDrawer(drawerQuery.matches);
+    };
+    sync();
+    compactQuery.addEventListener("change", sync);
+    drawerQuery.addEventListener("change", sync);
+    return () => {
+      compactQuery.removeEventListener("change", sync);
+      drawerQuery.removeEventListener("change", sync);
+    };
+  }, []);
+
+  const sectionProps = (id: string) => ({
+    id,
+    compact,
+    open: activeSection === id,
+    onToggle: (nextId: string) => setActiveSection((current) => current === nextId ? "" : nextId),
+  });
 
   return (
-    <aside className={`settings-panel no-print${open ? " is-open" : ""}`} aria-label="הגדרות הלוח" aria-hidden={!open && undefined}>
+    <aside className={`settings-panel no-print${open ? " is-open" : ""}`} aria-label="הגדרות הלוח" aria-hidden={drawer && !open || undefined} inert={drawer && !open ? true : undefined}>
       <div className="settings-panel__header">
         <div><span>סטודיו להדפסה</span><h1>הגדרות הלוח</h1></div>
         <button className="icon-button settings-close" type="button" aria-label="סגירת הגדרות" onClick={onClose}><Icon name="close" /></button>
       </div>
 
       <div className="settings-panel__scroll">
-        <Section eyebrow="01" title="טווח ופריסה">
+        <Section {...sectionProps("layout")} eyebrow="01" title="טווח ופריסה">
           <div className="field-grid field-grid--dates">
             <label className="field"><span>מתאריך</span><input type="date" value={settings.startDate} onChange={(event) => onUpdate({ startDate: event.target.value })} /></label>
             <label className="field"><span>עד תאריך</span><input type="date" value={settings.endDate} onChange={(event) => onUpdate({ endDate: event.target.value })} /></label>
@@ -88,7 +136,7 @@ export const SettingsPanel = ({ settings, open, loading, onClose, onUpdate, onDe
           <label className="field"><span>ימים מחוץ לטווח</span><select value={settings.outsideDays} onChange={(event) => onUpdate({ outsideDays: event.target.value as CalendarSettings["outsideDays"] })}><option value="dim">מוצגים בעמעום</option><option value="blank">תאים ריקים</option><option value="show">מוצגים כרגיל</option></select></label>
         </Section>
 
-        <Section eyebrow="02" title="תוכן וסימונים">
+        <Section {...sectionProps("content")} eyebrow="02" title="תוכן וסימונים">
           <div className="toggle-list">
             <Toggle checked={settings.showMajor} label="חגים מרכזיים" onChange={(showMajor) => onUpdate({ showMajor })} />
             <Toggle checked={settings.showMinor} label="מועדים נוספים" onChange={(showMinor) => onUpdate({ showMinor })} />
@@ -103,7 +151,7 @@ export const SettingsPanel = ({ settings, open, loading, onClose, onUpdate, onDe
           {customEventErrors.length > 0 && <p className="field-error">יש לתקן את השורות: {customEventErrors.join(", ")}. הפורמט הוא YYYY-MM-DD | טקסט.</p>}
         </Section>
 
-        <Section eyebrow="03" title="עיצוב וטיפוגרפיה">
+        <Section {...sectionProps("design")} eyebrow="03" title="עיצוב וטיפוגרפיה">
           <div className="control-label">ערכת עיצוב</div>
           <Segmented label="ערכת עיצוב" value={settings.designPreset} options={[{ value: "classic", label: "קלאסי" }, { value: "modern", label: "מודרני" }, { value: "heritage", label: "מורשת" }, ...(settings.designPreset === "custom" ? [{ value: "custom" as const, label: "מותאם" }] : [])]} onChange={(preset) => preset !== "custom" && onPreset(preset)} />
           <div className="control-label">צפיפות</div>
@@ -124,7 +172,7 @@ export const SettingsPanel = ({ settings, open, loading, onClose, onUpdate, onDe
           </div>
         </Section>
 
-        <Section eyebrow="04" title="קובץ פרויקט">
+        <Section {...sectionProps("project")} eyebrow="04" title="קובץ פרויקט">
           <p className="section-copy">אפשר לשמור את כל ההגדרות והאזכורים בקובץ מקומי ולהמשיך במחשב אחר.</p>
           <div className="project-actions">
             <button type="button" className="button button--quiet" onClick={onExportProject}><Icon name="download" />שמירת פרויקט</button>

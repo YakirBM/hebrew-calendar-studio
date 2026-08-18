@@ -20,11 +20,12 @@ export const DayCell = ({ day, settings, outside, customEvents, notes, onEdit }:
   const hebrew = formatHebrewDate(day);
   const events = sortEvents(day.events).filter((event) => isEventVisible(event, settings));
   const hideContent = outside && settings.outsideDays === "blank";
+  const dimContent = outside && settings.outsideDays === "dim";
 
   return (
     <button
       type="button"
-      className={`day-cell${outside ? " is-outside" : ""}${date?.getDay() === 6 && settings.shadeSaturday ? " is-saturday" : ""}`}
+      className={`day-cell${dimContent ? " is-outside" : ""}${date?.getDay() === 6 && settings.shadeSaturday ? " is-saturday" : ""}`}
       data-date={day.date}
       onClick={() => onEdit(day.date)}
       aria-label={`${gregorian}, ${hebrew || "תאריך עברי"}. לחיצה לעריכת אזכור`}

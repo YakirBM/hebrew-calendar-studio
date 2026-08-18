@@ -40,11 +40,14 @@ test("creates an equal-cell calendar and saves a personal note", async ({ page }
   const heights = await page.locator(".day-cell[data-date]").evaluateAll((cells) => cells.slice(0, 14).map((cell) => Math.round(cell.getBoundingClientRect().height * 10) / 10));
   expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(0.2);
 
-  await page.locator(".day-cell[data-date]").first().click();
+  const dayTrigger = testInfo.project.name === "mobile-chromium"
+    ? page.locator(".mobile-day-card[data-mobile-date]").first()
+    : page.locator(".day-cell[data-date]").first();
+  await dayTrigger.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByPlaceholder("למשל: יום הולדת לאבא").fill("יום הולדת לאבא");
-  await page.getByRole("button", { name: "הוספת אזכור" }).click();
-  await expect(page.getByText("יום הולדת לאבא").first()).toBeVisible();
+  await page.getByRole("button", { name: "הוספת אזכור", exact: true }).click();
+  await expect(page.getByRole("dialog").getByText("יום הולדת לאבא")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("desktop-calendar.png"), fullPage: true });
 });
 
@@ -62,6 +65,19 @@ test("supports A3 landscape without horizontal application overflow", async ({ p
 test("mobile settings are full-width, touchable and do not clip the preview", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-chromium", "mobile-only responsive test");
   await page.goto("/");
+  await expect(page.locator(".mobile-week-calendar")).toBeVisible();
+  await expect(page.locator(".mobile-day-card")).toHaveCount(7);
+  await expect(page.locator(".mobile-action-bar")).toBeVisible();
+  const dayTargets = await page.locator(".mobile-day-card").evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().height));
+  expect(Math.min(...dayTargets)).toBeGreaterThanOrEqual(72);
+  const actionTargets = await page.locator(".mobile-action-bar button").evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().height));
+  expect(Math.min(...actionTargets)).toBeGreaterThanOrEqual(56);
+
+  await page.getByRole("button", { name: "דף מלא" }).click();
+  await expect(page.locator(".preview-page-frame").first()).toBeVisible();
+  await page.getByRole("button", { name: "שבוע קריא" }).click();
+  await expect(page.locator(".mobile-week-calendar")).toBeVisible();
+
   await page.getByRole("button", { name: "הגדרות" }).click();
   const panel = page.locator(".settings-panel");
   await expect(panel).toBeVisible();
@@ -73,6 +89,21 @@ test("mobile settings are full-width, touchable and do not clip the preview", as
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
   await page.screenshot({ path: testInfo.outputPath("mobile-calendar.png"), fullPage: true });
+});
+
+test("mobile layout remains usable at compact portrait and landscape boundaries", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-chromium", "mobile-only breakpoint test");
+  for (const viewport of [{ width: 320, height: 568 }, { width: 667, height: 375 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expect(page.locator(".mobile-week-calendar")).toBeVisible();
+    const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(horizontalOverflow).toBeLessThanOrEqual(1);
+    const navBox = await page.locator(".mobile-action-bar").boundingBox();
+    expect(navBox?.width).toBeGreaterThanOrEqual(viewport.width - 1);
+    const headerBox = await page.locator(".mobile-week-calendar__header").boundingBox();
+    expect(headerBox?.width).toBeLessThanOrEqual(viewport.width - 24);
+  }
 });
 
 test("blocks export when extreme text still overflows at the safety minimum", async ({ page }, testInfo) => {

@@ -206,17 +206,27 @@ The visual direction is **editorial utility**: a contemporary print workshop wit
 the physical page as its memorable anchor. The original green, parchment, and
 serif identity remains recognizable.
 
-Desktop uses a persistent settings rail and preview workspace. Compact viewports
-use a safe-area-aware full-height settings sheet. The sheet locks background
-scroll, traps focus, supports Escape and explicit close, and places the Generate
-action in the thumb zone. Form rows collapse to one column when necessary.
+Desktop uses a persistent settings rail and preview workspace. Below 1024 px the
+rail becomes a modal drawer. At 680 px and below it becomes a safe-area-aware,
+full-height settings sheet with compact accordion sections, explicit close and
+Escape handling, locked background scrolling, and a persistent Generate action.
+Date fields collapse to one column below 480 px.
 
-The preview always fits the selected paper width on first render, including A3
-landscape. User zoom may deliberately enable two-dimensional scrolling. Preview
-controls, export, settings, and dialog actions meet mobile target sizes. The day
-editor becomes a full-screen sheet on compact phones and remains a dialog on
-larger displays. Motion uses transform and opacity only and respects reduced
-motion preferences.
+Phones open in a touch-first weekly reading view rather than shrinking all 22
+weeks into the only interactive surface. Seven readable day cards expose dates,
+events, notes, and a direct edit action; week navigation uses 48 px controls. A
+safe-area-aware bottom action bar keeps Settings, Weekly view, Physical page, and
+PDF export in the thumb zone. Phone landscape uses a two-column week grid when
+at least 600 px wide. The user can switch to the exact physical-page preview at
+any time, where paper fit and manual zoom remain available.
+
+The physical page stays mounted outside the visible phone viewport while Weekly
+view is active so font fitting and export overflow validation remain authoritative;
+it is inert and hidden from assistive technology until selected. Print CSS always
+restores the physical page and removes the mobile reading view. The day editor is
+full-screen on compact phones and a dialog on larger displays. Interactive phone
+controls meet 48 px Android targets, safe areas are honored, and reduced-motion
+preferences disable nonessential transitions.
 
 ## 11. Error and reliability model
 
