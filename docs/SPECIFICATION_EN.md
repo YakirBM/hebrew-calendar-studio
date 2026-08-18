@@ -7,10 +7,10 @@
 | Product | Hebrew Calendar Studio |
 | Hebrew product name | סטודיו לוח עברי |
 | Specification language | English |
-| Version | 1.0 |
-| Date | 2026-08-16 |
+| Version | 2.0 |
+| Date | 2026-08-18 |
 | Status | Implemented baseline and maintenance reference |
-| Primary entry point | `../index.html` |
+| Primary entry point | `../src/app/page.tsx` |
 | Intended audience | Product owner, developer, QA engineer, designer, maintainer, and advanced user |
 
 This document is the definitive English specification for the packaged application. It describes the implemented system, the domain rules it relies on, its operational boundaries, and the acceptance criteria for future changes.
@@ -19,9 +19,9 @@ This document is the definitive English specification for the packaged applicati
 
 Hebrew Calendar Studio replaces a repetitive PowerPoint-to-PDF workflow with a reusable browser application. The user selects a civil date range, an Israel or Diaspora calendar convention, visible event categories, page size, typography, colors, and pagination behavior. The application obtains verified Jewish calendar data from Hebcal, converts the result into a Sunday-to-Saturday RTL grid, permits date-specific personal notes, validates that no cell content is silently clipped, and opens the browser's print workflow for PDF creation.
 
-The primary design constraint is stronger than ordinary responsive layout: unless the user explicitly enables multi-page output, the complete calendar grid must occupy one physical A4 or A3 portrait page. Cells must remain equal in width and height. If the requested content cannot fit, the system must warn or block export rather than hide text.
+The primary design constraint is stronger than ordinary responsive layout: unless the user explicitly enables multi-page output, the complete calendar grid must occupy one physical A4 or A3 page in the selected orientation. Cells must remain equal in width and height. If the requested content cannot fit, the system must warn or block export rather than hide text.
 
-The delivered product is a self-contained HTML file. It does not require a build process, application server, account system, or private database. Network access is used only to retrieve calendar data and remote web fonts. Settings, personal notes, and recent API results are stored locally in the browser.
+The delivered product is a modular Next.js App Router application deployed on Vercel. It has no account system or private database. A server-side route validates and proxies Hebcal requests while settings, personal notes, and recent exact-range responses remain local in the browser.
 
 ## 3. Problem statement and source workflow
 
@@ -42,7 +42,7 @@ The application preserves the recognizable structure of the source calendar whil
 1. Generate a precise Hebrew/Gregorian calendar for any valid range of up to 1,096 days.
 2. Present seven RTL columns with Sunday on the right and Saturday on the left.
 3. Keep every day cell structurally equal within a page.
-4. Fit the entire grid on one A4 or A3 portrait page by default.
+4. Fit the entire grid on one A4 or A3 page, in portrait or landscape, by default.
 5. Paginate only after an explicit user choice.
 6. Include reliable Jewish holidays, fasts, Rosh Chodesh, special Shabbatot, and weekly Torah portions.
 7. Support the Israeli calendar by default and the Diaspora schedule as an option.
@@ -122,7 +122,8 @@ The single page contains:
 | Start date | Valid ISO civil date | Current week's Sunday | Required |
 | End date | Valid ISO civil date | 22-week Saturday | Required; not earlier than start |
 | Calendar convention | Israel, Diaspora | Israel | Controls holidays and Torah reading cycle |
-| Paper size | A4 210 x 297 mm, A3 297 x 420 mm | A4 | Portrait orientation |
+| Paper size | A4 210 x 297 mm, A3 297 x 420 mm | A4 | Physical CSS millimetres |
+| Orientation | Portrait, landscape | Portrait | Swaps the physical width and height |
 | Pagination | Single-page auto-fit, explicit multi-page | Single page | Multi-page must be deliberately selected |
 | Weeks per page | 4-52 | 22 | Enabled only in multi-page mode |
 | Days outside requested range | Dim, blank, normal | Dim | Used after aligning to complete weeks |
@@ -164,7 +165,7 @@ The user controls:
 - Holiday and fast color.
 - Default personal-note color.
 
-Print color adjustment is requested through CSS. The vector grid does not depend on browser background-graphics settings.
+Print color adjustment is requested through CSS. Structural grid borders remain visible even when background graphics are disabled.
 
 ### 8.5 External/custom events
 
@@ -328,28 +329,29 @@ Primary references:
 
 ### 11.1 System boundary
 
-The system is a static, client-only application. The only runtime external dependency is Hebcal plus optional font files.
+The system is a modular Next.js application. Vercel serves the static interface and a narrow server route that validates and proxies Hebcal requests. Personal content remains browser-only.
 
 ```mermaid
 flowchart LR
     U[User] --> UI[RTL settings and preview]
     UI --> V[Range and settings validation]
-    V --> API[Hebcal REST API]
-    API --> N[Normalization by ISO date]
+    V --> BFF[Next.js calendar route]
+    BFF --> API[Hebcal REST API]
+    API --> N[Server normalization by ISO date]
     N --> R[Calendar renderer]
-    LS[(Browser localStorage)] <--> UI
-    LS <--> N
+    LS[(localStorage settings)] <--> UI
+    IDB[(IndexedDB notes and cache)] <--> UI
     R --> O[Overflow and print validation]
     O --> P[Browser print dialog / PDF]
 ```
 
 ### 11.2 Implementation style
 
-- One `index.html` file contains semantic HTML, CSS, and JavaScript.
-- JavaScript executes inside an IIFE under strict mode.
-- No framework, package manager, bundler, or compilation is required.
-- UI references are cached once by element ID.
-- A central mutable state object contains settings, notes, normalized calendar data, connection state, layout state, and request lifecycle state.
+- Next.js 16 App Router and React 19 provide the route and component boundaries.
+- Strict TypeScript separates domain, application, infrastructure, state, component, and style modules.
+- Zustand stores expose settings and calendar state without sending personal notes to the server.
+- The `/api/calendar` route validates input with Zod, uses Hebcal through a server-only adapter, and returns a normalized contract.
+- The browser persists versioned settings in localStorage and notes/cache in IndexedDB.
 
 ### 11.3 Major modules/functions
 
@@ -359,7 +361,7 @@ flowchart LR
 | Input handling | Read controls, persist values, distinguish data-invalidating changes from local rendering changes |
 | Data loading | Validate range, fetch Hebcal, cache/fallback, update connection indicator |
 | Normalization | Convert raw items into daily records and normalized event types |
-| Rendering | Build pages, cells, headers, vector grid lines, and accessibility labels |
+| Rendering | Build pages, cells, headers, CSS grid borders, and accessibility labels |
 | Fitting | Compute global sizing, shrink individual cells when needed, block unresolved overflow |
 | Notes | Add, edit, delete, persist, and merge date-specific annotations |
 | Project transfer | Export/import settings and notes as JSON |
@@ -369,7 +371,7 @@ flowchart LR
 
 ### 12.1 Settings object
 
-The settings object includes range, region, paper, pagination, visible content flags, typography, geometry, colors, and custom event text. It is persisted under `seder-yom-settings-v1`.
+The settings object includes range, region, paper, orientation, pagination, visible content flags, typography, geometry, colors, and custom event text. It is persisted under `seder-yom-settings-v2`.
 
 ### 12.2 Day record
 
@@ -400,13 +402,13 @@ Records are stored in a `Map` keyed by ISO civil date.
 ```js
 {
   id: "locally unique identifier",
-  text: "up to 120 characters",
+  text: "up to 500 characters",
   color: "#RRGGBB",
   bold: true | false
 }
 ```
 
-Notes are grouped by ISO date and stored under `seder-yom-notes-v1`.
+Notes are grouped by ISO date and stored in the `seder-yom-studio/personal-notes` IndexedDB store. A one-time migration imports the earlier localStorage format.
 
 ### 12.5 Cache entry
 
@@ -417,7 +419,7 @@ Notes are grouped by ISO date and stored under `seder-yom-notes-v1`.
 }
 ```
 
-The cache object is keyed by aligned start date, aligned end date, and region. Only the ten newest entries are retained under `seder-yom-hebcal-cache-v1`.
+The cache is keyed by exact requested range and region, includes the aligned range in each normalized payload, and retains only the ten newest entries in `seder-yom-studio/calendar-cache` IndexedDB.
 
 ### 12.6 Project export payload
 
@@ -455,12 +457,12 @@ In multi-page mode:
 
 ### 13.3 Equal cells
 
-CSS Grid uses seven `minmax(0, 1fr)` columns and an explicit weekday header row plus equal fractional week rows. Empty and populated cells participate in the same tracks. A vector SVG overlay draws exactly:
+CSS Grid uses seven `minmax(0, 1fr)` columns and an explicit weekday header row plus equal fractional week rows. Empty and populated cells participate in the same tracks. Print-stable CSS borders form exactly:
 
 - Eight vertical boundaries for seven columns.
 - `rowsPerPage + 2` horizontal boundaries: top, header bottom, and one bottom boundary per week row.
 
-The SVG is marked `aria-hidden`, cannot receive focus, and does not intercept pointer events. A minimum 1 pt stroke prevents print-preview rasterization from dropping hairlines.
+Borders use the selected line width and color. The layout engine verifies the resulting PDF geometry and unresolved text overflow blocks export.
 
 ## 14. Automatic sizing and overflow policy
 
@@ -517,7 +519,7 @@ During print:
 - Page preview transforms and shadows are removed.
 - Each page shell uses the selected physical width and height.
 - Explicit page breaks occur only between generated page shells.
-- The vector grid remains visible without requiring background graphics.
+- Structural grid borders remain visible without requiring background graphics.
 
 ### 15.3 Export guard
 
@@ -538,26 +540,26 @@ Export is available only when:
 | Cache/amber | Exact aligned range and region loaded from local cache | Enabled with warning |
 | Error/red | No current verified data and no matching cache | Disabled |
 
-`navigator.onLine` is treated only as an initial signal. A green state requires a successful, structurally valid Hebcal response.
+The network indicator reports `navigator.onLine` independently and explicitly so that an upstream Hebcal error is not mislabeled as a lost internet connection. The notice bar separately distinguishes verified data, exact-range cache, loading, and source errors.
 
 ## 17. Persistence, privacy, and security
 
 ### 17.1 Local data
 
-The application stores data in browser `localStorage`. Clearing site data or opening the file under a different origin/profile may remove or isolate that data. Users should export a project JSON for backup.
+The application stores versioned settings in browser `localStorage` and notes/cache in IndexedDB. Clearing site data or using a different browser profile may remove or isolate that data. Users should export a project JSON for backup.
 
 ### 17.2 Personal data flow
 
 - Personal notes remain local.
 - Notes are never included in Hebcal requests.
-- The API receives only an aligned date range, Israel/Diaspora selection, and calendar category parameters.
+- The application server receives only the requested civil range and Israel/Diaspora selection; Hebcal receives the aligned range and calendar category parameters.
 - There is no telemetry or analytics code.
 
 ### 17.3 Input safety
 
 - Day content is created with DOM nodes and `textContent`.
 - Custom events are parsed as text.
-- Note length is capped at 120 characters.
+- Note length is capped at 500 characters and unresolved overflow blocks export.
 - Project import requires a recognized `kind`, settings object, and notes object.
 - Font values are sanitized before interpolation into CSS.
 
@@ -575,7 +577,7 @@ Hebcal is an external data provider. The application validates response shape bu
 - Form controls have visible labels.
 - Toggle focus rings remain visible.
 - The day editor is a native dialog with a close button.
-- The grid-line SVG is decorative and excluded from the accessibility tree.
+- Structural grid borders do not add noise to the accessibility tree.
 - Reduced-motion preferences disable nonessential transitions.
 - Print-only visual lines do not carry semantic meaning unavailable elsewhere.
 
@@ -632,7 +634,7 @@ Hebcal is an external data provider. The application validates response shape bu
 - Explicit three-page output.
 - Deliberately impossible personal-note payload.
 - Equal cell dimensions on every page.
-- Exactly eight vertical vector lines and the expected horizontal line count.
+- Exactly eight vertical boundaries and the expected horizontal boundary count.
 - PDF generation for A4, A3, and explicit pagination.
 
 `tests/diagnose_print_clipping.py` covers:
@@ -654,8 +656,8 @@ Hebcal is an external data provider. The application validates response shape bu
 ### 21.3 Acceptance metrics
 
 - Cell dimension variance caused by pixel distribution must remain below 0.05 CSS px per page.
-- A seven-column page must contain exactly eight vertical vector boundaries.
-- A page with `N` week rows must contain exactly `N + 2` horizontal vector boundaries.
+- A seven-column page must contain exactly eight vertical boundaries.
+- A page with `N` week rows must contain exactly `N + 2` horizontal boundaries.
 - A4 output must measure approximately 594.96 x 841.92 PDF points.
 - A3 output must measure approximately 841.92 x 1191.12 PDF points.
 - Export must be disabled when any real date cell remains overflowing.
@@ -664,11 +666,11 @@ Hebcal is an external data provider. The application validates response shape bu
 
 ### 22.1 Local operation
 
-Open `index.html` directly. The file-origin approach is supported by current Chromium browsers and the Hebcal API's cross-origin policy.
+Run `npm install` and `npm run dev`, then open `http://localhost:3000`. Production behavior must also be checked with `npm run build` and `npm start`.
 
 ### 22.2 Static hosting
 
-The same folder may be served by any static web server. Hosting provides a stable origin for localStorage and may improve font/cache behavior. No server routes are required.
+Production is deployed at `https://hebrew-calendar-studio.vercel.app` because `/api/calendar` requires the Next.js runtime. The project is linked to the GitHub repository for reproducible deployments. The previous GitHub Pages URL provides a minimal redirect to the Vercel production site.
 
 ### 22.3 Browser support
 
@@ -683,15 +685,15 @@ Primary verification uses current Google Chrome on Windows. Modern Chromium-base
 5. Any print-grid change must be checked at print-dialog raster scale, not only at 100% browser zoom.
 6. Any change to paper geometry must be verified in the generated PDF metadata.
 7. Update both English and Hebrew specifications together.
-8. Run all three test scripts before packaging a release.
+8. Run lint, type checking, unit tests, Playwright tests, and the production build before release.
 
 ## 24. Known limitations and risks
 
 - Very long ranges may technically fit only at unreadably small type. The warning threshold mitigates but does not make tiny text comfortable.
 - A 156-week single page is intentionally blocked because three lines per cell cannot fit reliably.
-- Browser print dialogs can visually rasterize thin lines inconsistently; the vector overlay and 1 pt minimum mitigate this.
+- Browser print dialogs can visually rasterize thin lines inconsistently; PDF metadata and PNG rendering are part of release verification.
 - Remote font availability can change line metrics. Export waits for `document.fonts.ready`, but a local fallback may look different.
-- LocalStorage is browser-profile specific and not a backup system.
+- Browser storage is profile-specific and not a backup system.
 - Hebcal availability and API changes are external operational dependencies.
 - The application does not provide zmanim or sunset-aware date switching.
 - Modern Israeli observance dates can be subject to statutory or institutional changes; source updates must be respected.
@@ -700,14 +702,14 @@ Primary verification uses current Google Chrome on Windows. Modern Chromium-base
 
 A release is acceptable only when all of the following are true:
 
-1. The application opens from the packaged `index.html` without a build step.
+1. The application passes a Next.js production build and opens from the Vercel deployment.
 2. A verified 22-week Israel calendar renders 154 dates in the correct order.
 3. Gregorian and Hebrew month starts are emphasized.
 4. Rosh Chodesh, holidays, fasts, parashah, and requested state observances can be toggled.
 5. Notes can be created, edited, deleted, persisted, exported, and imported.
 6. A4 and A3 single-page examples produce exactly one page each.
 7. Multi-page output occurs only after explicit selection.
-8. Every page has equal cells and complete vector boundaries.
+8. Every page has equal cells and complete structural boundaries.
 9. No unresolved cell overflow can be exported.
 10. Mobile preview fits within the viewport by default.
 11. Offline exact-range cache behavior and no-cache error behavior are both verified.
@@ -742,7 +744,7 @@ Potential future enhancements, subject to separate approval:
 | Explicit pagination | User-selected mode with a configured number of weeks per page |
 | Layout ready | Fonts loaded and all cells measured for overflow |
 | Verified data | Successful current API response or an exact matching cached response |
-| Vector grid | Decorative SVG layer that draws complete print-stable cell boundaries |
+| Print grid | CSS Grid tracks and print-stable borders that preserve complete cell boundaries |
 
 ## 28. Reference inventory
 

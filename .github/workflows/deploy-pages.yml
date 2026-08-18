@@ -28,10 +28,15 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6.0.0
 
+      - name: Prepare Vercel redirect page
+        run: |
+          mkdir github-pages
+          cp index.html .nojekyll github-pages/
+
       - name: Upload static site
         uses: actions/upload-pages-artifact@v5
         with:
-          path: .
+          path: github-pages
 
       - name: Deploy to GitHub Pages
         id: deployment

@@ -3,3 +3,15 @@ qa/layout-artifacts/
 qa/test-artifacts/
 __pycache__/
 *.pyc
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+tmp/
+.vercel/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts

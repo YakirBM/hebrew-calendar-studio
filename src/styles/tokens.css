@@ -1,0 +1,24 @@
+:root {
+  --forest-950: #102c25;
+  --forest-900: #173d33;
+  --forest-800: #205145;
+  --forest-100: #dfeae5;
+  --gold: #d7a93a;
+  --gold-soft: #f5dfaa;
+  --paper: #fffdf8;
+  --parchment: #ebe5d8;
+  --canvas: #e8ece9;
+  --ink: #17221f;
+  --muted: #63716c;
+  --line: #ccd4d0;
+  --danger: #a34135;
+  --success: #1e765f;
+  --panel-width: 390px;
+  --topbar-height: 76px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-paper: 0 24px 65px rgb(20 39 33 / .16), 0 2px 7px rgb(20 39 33 / .12);
+  --shadow-panel: 0 16px 50px rgb(15 42 35 / .18);
+  --ease: cubic-bezier(.2,.75,.2,1);
+}

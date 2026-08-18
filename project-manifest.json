@@ -2,20 +2,22 @@
   "name": "hebrew-calendar-studio",
   "displayName": "Hebrew Calendar Studio",
   "displayNameHebrew": "סטודיו לוח עברי",
-  "version": "1.0.0",
-  "packagedAt": "2026-08-16",
-  "entryPoint": "index.html",
-  "runtime": "Static client-side HTML, CSS, and JavaScript",
+  "version": "2.0.0",
+  "packagedAt": "2026-08-18",
+  "entryPoint": "src/app/page.tsx",
+  "runtime": "Next.js 16 App Router on Vercel with a server-side Hebcal proxy",
+  "productionUrl": "https://hebrew-calendar-studio.vercel.app",
+  "repository": "https://github.com/YakirBM/hebrew-calendar-studio",
   "externalDataSource": "https://www.hebcal.com/hebcal",
   "defaultLocale": "he-IL",
   "direction": "rtl",
-  "supportedPaperSizes": ["A4 portrait", "A3 portrait"],
+  "supportedPaperSizes": ["A4 portrait", "A4 landscape", "A3 portrait", "A3 landscape"],
   "defaultPagination": "single-page auto-fit",
   "maximumRangeDays": 1096,
-  "localStorageKeys": [
-    "seder-yom-settings-v1",
-    "seder-yom-notes-v1",
-    "seder-yom-hebcal-cache-v1"
+  "browserStorage": [
+    "localStorage: seder-yom-settings-v2",
+    "IndexedDB: seder-yom-studio/personal-notes",
+    "IndexedDB: seder-yom-studio/calendar-cache"
   ],
   "documentation": {
     "english": "docs/SPECIFICATION_EN.md",
@@ -26,8 +28,8 @@
     "references/לוח חודשים_09.11.2023.pdf"
   ],
   "tests": [
-    "tests/test_app.py",
-    "tests/test_layout_extremes.py",
-    "tests/diagnose_print_clipping.py"
+    "tests/unit/*.test.ts",
+    "tests/e2e/studio.spec.ts",
+    "tests/test_layout_extremes.py (legacy regression reference)"
   ]
 }

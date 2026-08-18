@@ -1,63 +1,71 @@
-# Hebrew Calendar Studio / סטודיו לוח עברי
+# Hebrew Calendar Studio / סדר יום
 
-**Public site / אתר ציבורי:**
-[https://yakirbm.github.io/hebrew-calendar-studio/](https://yakirbm.github.io/hebrew-calendar-studio/)
+**Public site / אתר ציבורי:** [https://hebrew-calendar-studio.vercel.app](https://hebrew-calendar-studio.vercel.app)
 
-A standalone, RTL-first Hebrew calendar planner that generates print-ready A4 or A3 calendar grids with Gregorian and Hebrew dates, Jewish holidays, fasts, Rosh Chodesh, weekly Torah portions, Israeli national observances, custom events, and personal notes.
+An RTL-first Next.js application for creating accurate Hebrew/Gregorian calendar grids and exporting them as print-ready A4 or A3 PDFs. The interface supports Israel and Diaspora conventions, holidays, fasts, Rosh Chodesh, weekly Torah portions, Israeli state observances, external events, and private date-specific notes.
 
-יישום עצמאי בעברית וב-RTL ליצירת לוח תאריכים מוכן להדפסה בגודל A4 או A3. כל תא כולל תאריך לועזי ועברי ויכול לכלול חגים, צומות, ראשי חודשים, פרשות שבוע, מועדים ישראליים, אירועים חיצוניים ואזכורים אישיים.
+יישום Next.js מלא בעברית וב־RTL ליצירת לוחות עבריים מדויקים ומותאמים אישית. ניתן לבחור טווח, מנהג ישראל או חו״ל, A4 או A3, כיוון אנכי או אופקי, תוכן, צבעים וטיפוגרפיה, להוסיף אזכורים בלחיצה על יום, ולשמור PDF דרך חלון ההדפסה.
 
-## Quick start / הפעלה מהירה
+## Main capabilities / יכולות עיקריות
 
-1. Open the public site above, or open `index.html` locally in a current Chrome, Edge, or another Chromium-based browser.
-2. Confirm that the connection indicator reports a verified Hebcal connection or a valid local cache.
-3. Choose a range and print configuration, then select **Create verified preview**.
-4. Click a day cell to add or edit personal notes.
-5. Select **Export PDF** and save through the browser print dialog.
+- Seven equal RTL columns: Sunday on the right and Saturday on the left.
+- Reliable calendar data through a server-side Hebcal proxy with daily caching and validation.
+- A4/A3, portrait/landscape, single-page default, and explicit multi-page mode.
+- Automatic preview fit and per-cell font fitting; export is blocked if text would still be clipped.
+- Clear positive network indication plus exact-range offline cache.
+- Private personal notes stored only in browser IndexedDB.
+- Versioned project import/export as JSON.
+- Responsive settings drawer and full-screen mobile day editor.
+- Strict TypeScript, unit tests, Playwright desktop/mobile tests, and production builds.
 
-1. פתחו את האתר הציבורי בקישור לעיל, או את `index.html` מקומית בדפדפן Chrome או Edge עדכני.
-2. ודאו שמחוון החיבור מציג אימות מול Hebcal או מטמון מקומי תקף.
-3. בחרו טווח והגדרות הדפסה ולחצו על **יצירת תצוגה מדויקת**.
-4. לחצו על תא יום כדי להוסיף או לערוך אזכורים אישיים.
-5. לחצו על **ייצוא PDF** ושמרו דרך חלון ההדפסה של הדפדפן.
+## Local development / פיתוח מקומי
 
-## Project layout / מבנה התיקייה
-
-| Path | Purpose |
-|---|---|
-| `index.html` | Complete single-file application. |
-| `docs/SPECIFICATION_EN.md` | Definitive English functional and technical specification. |
-| `docs/SPECIFICATION_HE.md` | אפיון פונקציונלי וטכני מלא בעברית. |
-| `docs/DESIGN_NOTES_HE.md` | Earlier Hebrew design notes and decision history. |
-| `references/` | Original PowerPoint and PDF calendar documents used as visual references. |
-| `tests/` | Playwright regression, edge-case, and print-clipping diagnostics. |
-| `qa/` | Latest structured results, visual proof, and verified PDF examples. |
-| `project-manifest.json` | Machine-readable project inventory and runtime facts. |
-
-## Runtime and privacy
-
-- The application has no build step and no private backend.
-- Calendar data is requested from the official Hebcal REST API.
-- Settings, notes, and up to ten recent calendar responses are stored only in the browser's `localStorage`.
-- Personal notes are not sent to Hebcal.
-- An internet connection is required for a new date range. A previously cached range remains available offline.
-
-## Tests
-
-Install Python 3.12+ and the dependencies listed in `tests/requirements.txt`, then run:
+Requirements: Node.js 22 or newer and npm.
 
 ```powershell
 Set-Location C:\yakir2026\hebrew-calendar-studio
-.\run-tests.ps1
+npm install
+npm run dev
 ```
 
-The tests launch the installed Google Chrome executable in headless mode and write screenshots and PDF evidence under `qa/`.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Documentation
+## Verification / בדיקות
 
-- English: [docs/SPECIFICATION_EN.md](docs/SPECIFICATION_EN.md)
-- עברית: [docs/SPECIFICATION_HE.md](docs/SPECIFICATION_HE.md)
+```powershell
+npm run lint
+npm run typecheck
+npm test
+npm run test:e2e
+npm run build
+```
 
-## Data attribution
+`npm run verify` runs lint, type checking, unit tests, and the production build. Playwright additionally validates equal cells, long-text export blocking, A3 landscape, mobile behavior, personal notes, and exact one-page A4 PDF output.
 
-Calendar, holiday, and Torah-reading data is provided by [Hebcal](https://www.hebcal.com/home/developer-apis). Content produced by the Hebcal APIs is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Local customs should be confirmed with an appropriate religious authority.
+## Project structure / מבנה הפרויקט
+
+| Path | Purpose |
+|---|---|
+| `src/app/` | Next.js App Router pages, metadata, and calendar API route |
+| `src/domain/` | Pure calendar and print-layout rules |
+| `src/application/` | Calendar orchestration and project-file use cases |
+| `src/infrastructure/` | Hebcal adapter and browser storage repositories |
+| `src/components/` | Modular RTL UI, preview, settings, and day editor |
+| `src/state/` | Zustand settings and calendar stores |
+| `src/styles/` | Design tokens, responsive UI, calendar, and print CSS |
+| `tests/unit/` | Deterministic domain tests |
+| `tests/e2e/` | Playwright desktop, mobile, overflow, and PDF tests |
+| `docs/ARCHITECTURE.md` | Full English architecture document |
+| `docs/ARCHITECTURE_HE.md` | מסמך ארכיטקטורה מלא בעברית |
+| `docs/SPECIFICATION_EN.md` | Full English product specification |
+| `docs/SPECIFICATION_HE.md` | מסמך אפיון מוצר מלא בעברית |
+| `legacy/` | Archived original standalone implementation after migration |
+| `references/` | Original PowerPoint and PDF visual references |
+
+## Runtime, privacy, and accuracy
+
+The browser requests `/api/calendar`; the Next.js server validates the range, aligns it to full weeks, and retrieves Hebrew calendar data from Hebcal. Settings remain in versioned localStorage. Personal notes and up to ten exact-range calendar responses remain in IndexedDB and are never sent to Hebcal or Vercel.
+
+The calendar follows Hebcal data and is intended as a planning and printing tool, not as an independent halachic authority. Israel/Diaspora differences are selected explicitly. Hebrew leap months and two-day Rosh Chodesh are derived from the upstream calendar rather than calculated with handwritten tables.
+
+Calendar data is provided by [Hebcal](https://www.hebcal.com/home/developer-apis) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

@@ -1,0 +1,25 @@
+.calendar-paper { position: relative; box-sizing: border-box; direction: rtl; background: white; box-shadow: var(--shadow-paper); overflow: hidden; }
+.calendar-grid { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); direction: rtl; border-inline-end: var(--grid-width) solid var(--grid-color); border-block-end: var(--grid-width) solid var(--grid-color); background: white; overflow: hidden; }
+.weekday-header { min-width: 0; display: grid; place-items: center; padding: 1mm; color: var(--text-color, inherit); background: var(--header-color); border-inline-start: var(--grid-width) solid var(--grid-color); border-block-start: var(--grid-width) solid var(--grid-color); font-size: var(--header-size); font-family: Georgia, "Noto Serif Hebrew", serif; font-weight: 900; line-height: 1; white-space: nowrap; overflow: hidden; }
+.day-cell { position: relative; min-width: 0; min-height: 0; padding: 0; display: block; color: inherit; text-align: start; background: white; border: 0; border-inline-start: var(--grid-width) solid var(--grid-color); border-block-start: var(--grid-width) solid var(--grid-color); overflow: hidden; cursor: pointer; }
+.day-cell.is-saturday { background: color-mix(in srgb, var(--header-color) 25%, white); }
+.day-cell.is-outside { color: color-mix(in srgb, currentColor 40%, white); }
+.day-cell.is-outside .calendar-event, .day-cell.is-outside .personal-note { opacity: .5; }
+.day-cell.is-empty { cursor: default; }
+.day-cell__content { width: 100%; height: 100%; min-width: 0; min-height: 0; padding: var(--cell-pad-y) var(--cell-pad-x); display: flex; flex-direction: column; gap: .12em; font-size: var(--body-size); line-height: 1.12; overflow: hidden; }
+.day-cell__date-row { flex: 0 0 auto; display: flex; align-items: baseline; justify-content: space-between; gap: .35em; white-space: nowrap; }
+.day-cell__date-row b { max-width: 72%; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.day-cell__date-row > span { flex: 0 0 auto; font-size: .92em; font-variant-numeric: tabular-nums; }
+.day-cell__date-row .is-month-start { font-weight: 900; }
+.day-cell__events { min-height: 0; display: flex; flex-direction: column; gap: .08em; overflow-wrap: anywhere; }
+.calendar-event, .personal-note { display: block; line-height: 1.08; }
+.calendar-event { color: var(--holiday-color); font-weight: 800; }
+.calendar-event--parsha { color: inherit; }
+.calendar-event--state { color: #225c91; }
+.calendar-event--custom { color: #754e9a; }
+.personal-note { color: var(--note-color); }
+.day-cell__edit-hint { position: absolute; inset-inline-end: 3px; inset-block-end: 3px; inline-size: 15px; block-size: 15px; display: grid; place-items: center; color: var(--success); background: white; border-radius: 4px; opacity: 0; transform: scale(.8); transition: opacity .15s, transform .15s; }
+.day-cell__edit-hint svg { inline-size: 10px; }
+.day-cell:hover .day-cell__edit-hint, .day-cell:focus-visible .day-cell__edit-hint { opacity: 1; transform: scale(1); }
+.day-cell.has-overflow { box-shadow: inset 0 0 0 2px #c34234; }
+.page-number { position: absolute; inset-block-end: 1.2mm; inset-inline-start: 2mm; font-size: 6pt; }
