@@ -148,6 +148,7 @@ def main() -> None:
         offline_status = wait_for_calendar(page)
         results["offline_status"] = offline_status
         assert offline_status == "cache"
+        page.wait_for_function("() => !document.querySelector('#printButton').disabled")
         assert page.locator("#printButton").is_enabled()
         assert "ללא חיבור" in page.locator("#connectionText").inner_text()
         context.close()
