@@ -207,17 +207,17 @@ the physical page as its memorable anchor. The original green, parchment, and
 serif identity remains recognizable.
 
 Desktop uses a persistent settings rail and preview workspace. Below 1024 px the
-rail becomes a modal drawer. At 680 px and below it becomes a safe-area-aware,
+rail becomes a modal drawer. At 840 px and below it becomes a safe-area-aware,
 full-height settings sheet with compact accordion sections, explicit close and
 Escape handling, locked background scrolling, and a persistent Generate action.
 Date fields collapse to one column below 480 px.
 
-Phones open in a touch-first weekly reading view rather than shrinking all 22
-weeks into the only interactive surface. Seven readable day cards expose dates,
+Phones and compact tablets up to 840 px open in a touch-first weekly reading view
+rather than shrinking all 22 weeks into the only interactive surface. Seven readable day cards expose dates,
 events, notes, and a direct edit action; week navigation uses 48 px controls. A
 safe-area-aware bottom action bar keeps Settings, Weekly view, Physical page, and
-PDF export in the thumb zone. Phone landscape uses a two-column week grid when
-at least 600 px wide. The user can switch to the exact physical-page preview at
+PDF export in the thumb zone. Landscape screens use a two-column week grid when
+at least 600 px wide, and tablets use two columns in portrait from 720 px. The user can switch to the exact physical-page preview at
 any time, where paper fit and manual zoom remain available.
 
 The physical page stays mounted outside the visible phone viewport while Weekly

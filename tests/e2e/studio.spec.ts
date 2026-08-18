@@ -93,16 +93,25 @@ test("mobile settings are full-width, touchable and do not clip the preview", as
 
 test("mobile layout remains usable at compact portrait and landscape boundaries", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-chromium", "mobile-only breakpoint test");
-  for (const viewport of [{ width: 320, height: 568 }, { width: 667, height: 375 }]) {
+  for (const viewport of [{ width: 320, height: 568 }, { width: 667, height: 375 }, { width: 768, height: 1024 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
     await expect(page.locator(".mobile-week-calendar")).toBeVisible();
+    await expect(page.locator(".print-preview-region")).toHaveAttribute("inert", "");
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(horizontalOverflow).toBeLessThanOrEqual(1);
     const navBox = await page.locator(".mobile-action-bar").boundingBox();
     expect(navBox?.width).toBeGreaterThanOrEqual(viewport.width - 1);
     const headerBox = await page.locator(".mobile-week-calendar__header").boundingBox();
     expect(headerBox?.width).toBeLessThanOrEqual(viewport.width - 24);
+    const visibleTargetsBelow44 = await page.locator(".studio-root button").evaluateAll((buttons) => buttons.flatMap((button) => {
+      if (button.closest('[inert], [aria-hidden="true"]')) return [];
+      if (!button.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) return [];
+      const box = button.getBoundingClientRect();
+      if (!(box.width > 0 && box.height > 0 && (box.width < 44 || box.height < 44))) return [];
+      return [{ label: button.getAttribute("aria-label") ?? button.textContent?.trim(), width: box.width, height: box.height }];
+    }));
+    expect(visibleTargetsBelow44, `${viewport.width}x${viewport.height}`).toEqual([]);
   }
 });
 

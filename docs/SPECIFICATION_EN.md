@@ -110,10 +110,10 @@ The single page contains:
 ### 7.2 Responsive behavior
 
 - Desktop uses a persistent settings column and a scrollable preview workspace.
-- Below 1024 px, settings become a modal side drawer; at 680 px and below they become a full-screen accordion sheet.
-- At 680 px and below, the touch-first weekly view is the default. It shows exactly seven interactive day cards with 48 px navigation controls.
+- Below 1024 px, settings become a modal side drawer; at 840 px and below they become a full-screen accordion sheet.
+- At 840 px and below, the touch-first weekly view is the default. It shows exactly seven interactive day cards with 48 px navigation controls.
 - A fixed, safe-area-aware four-action bar provides Settings, Weekly view, Physical page, and PDF export.
-- In phone landscape at 600–680 px, day cards use a two-column layout.
+- In landscape at 600–840 px, and in portrait at 720–840 px, day cards use a two-column layout.
 - The exact physical-page preview remains available as a separate mobile view and is reduced automatically when it exceeds the available width.
 - Preview scrolling uses an LTR scroll container while the calendar remains RTL. This prevents the left edge of a wide page from becoming inaccessible in RTL scrolling implementations.
 - Manual zoom remains possible; if the user intentionally zooms beyond the available width, horizontal scrolling is allowed.

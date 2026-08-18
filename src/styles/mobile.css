@@ -10,7 +10,7 @@
   .preview-workspace { min-height: calc(100dvh - var(--topbar-height)); }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 840px) {
   :root { --topbar-height: 60px; }
   .studio-root { padding-block-end: calc(68px + env(safe-area-inset-bottom)); }
   .top-bar { min-height: var(--topbar-height); padding: 8px 12px; gap: 8px; }
@@ -105,20 +105,27 @@
   .field-grid--dates { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 680px) and (orientation: landscape) {
+@media (max-width: 840px) and (orientation: landscape) {
   .mobile-week-calendar { padding-block-start: 10px; }
   .mobile-week-calendar__header { grid-template-columns: minmax(0, 1fr) minmax(260px, .9fr); align-items: center; gap: 12px; padding: 10px 12px; }
   .mobile-week-calendar__hint { margin-block: 8px; }
   .mobile-day-card { min-height: 72px; grid-template-columns: 96px minmax(0, 1fr) 48px; }
 }
 
-@media (min-width: 600px) and (max-width: 680px) and (orientation: landscape) {
+@media (min-width: 600px) and (max-width: 840px) and (orientation: landscape) {
   .mobile-week-calendar__hint { display: none; }
   .mobile-week-calendar__days { margin-block-start: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mobile-day-card { grid-template-columns: 74px minmax(0, 1fr) 42px; }
   .mobile-day-card__weekday { padding-inline: 8px; }
   .mobile-day-card__content { padding-inline: 9px; }
   .mobile-day-card__dates { gap: 6px; }
+}
+
+@media (min-width: 720px) and (max-width: 840px) and (orientation: portrait) {
+  .mobile-week-calendar__days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mobile-day-card { grid-template-columns: 78px minmax(0, 1fr) 44px; }
+  .mobile-day-card__weekday { padding-inline: 9px; }
+  .mobile-day-card__content { padding-inline: 10px; }
 }
 
 @media (hover: none) {

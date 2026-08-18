@@ -90,7 +90,7 @@ export const SettingsPanel = ({ settings, open, loading, onClose, onUpdate, onDe
   const [activeSection, setActiveSection] = useState("layout");
 
   useEffect(() => {
-    const compactQuery = window.matchMedia("(max-width: 680px)");
+    const compactQuery = window.matchMedia("(max-width: 840px)");
     const drawerQuery = window.matchMedia("(max-width: 1024px)");
     const sync = () => {
       setCompact(compactQuery.matches);

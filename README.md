@@ -41,7 +41,7 @@ npm run test:e2e
 npm run build
 ```
 
-`npm run verify` runs lint, type checking, unit tests, and the production build. Playwright additionally validates equal cells, long-text export blocking, A3 landscape, 320 px portrait and phone-landscape behavior, mobile touch targets, personal notes, and exact one-page A4 PDF output.
+`npm run verify` runs lint, type checking, unit tests, and the production build. Playwright additionally validates equal cells, long-text export blocking, A3 landscape, 320 px portrait, phone landscape, 768 px tablet behavior, mobile touch targets, personal notes, and exact one-page A4 PDF output.
 
 ## Project structure / מבנה הפרויקט
 

@@ -59,7 +59,7 @@ export const CalendarStudio = () => {
   }, []);
 
   useEffect(() => {
-    const query = window.matchMedia("(max-width: 680px)");
+    const query = window.matchMedia("(max-width: 840px)");
     const sync = () => setCompactViewport(query.matches);
     sync();
     query.addEventListener("change", sync);
